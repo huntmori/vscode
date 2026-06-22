@@ -1,0 +1,432 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.noripan-canvas-editor {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: var(--vscode-editor-background);
+	color: var(--vscode-editor-foreground);
+}
+
+.noripan-canvas-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--vscode-panel-border);
+	background: var(--vscode-editorGroupHeader-tabsBackground);
+}
+
+.noripan-canvas-toolbar-button {
+	border: 1px solid var(--vscode-button-border, transparent);
+	background: var(--vscode-button-background);
+	color: var(--vscode-button-foreground);
+	padding: 4px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.noripan-canvas-toolbar-button:hover {
+	background: var(--vscode-button-hoverBackground);
+}
+
+.noripan-canvas-toolbar-button:focus-visible,
+.noripan-canvas-surface-header:focus-visible,
+.noripan-canvas-surface-action:focus-visible {
+	outline: 1px solid var(--vscode-focusBorder);
+	outline-offset: -1px;
+}
+
+.noripan-canvas-zoom-label {
+	min-width: 44px;
+	text-align: center;
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+}
+
+.noripan-canvas-scroll {
+	position: relative;
+	flex: 1;
+	overflow: auto;
+	outline: none;
+	background-image:
+		linear-gradient(to right, color-mix(in srgb, var(--vscode-editorWidget-border) 28%, transparent) 1px, transparent 1px),
+		linear-gradient(to bottom, color-mix(in srgb, var(--vscode-editorWidget-border) 28%, transparent) 1px, transparent 1px);
+	background-size: 32px 32px;
+}
+
+.noripan-canvas-root {
+	position: relative;
+	min-width: auto;
+	min-height: auto;
+}
+
+.noripan-canvas-message {
+	position: absolute;
+	left: 24px;
+	top: 24px;
+	max-width: 520px;
+	padding: 12px 14px;
+	border-radius: 8px;
+	background: color-mix(in srgb, var(--vscode-editorWidget-background) 92%, transparent);
+	border: 1px solid var(--vscode-editorWidget-border);
+	line-height: 1.45;
+	pointer-events: none;
+}
+
+.noripan-canvas-error {
+	color: var(--vscode-errorForeground);
+}
+
+.noripan-canvas-surface {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	min-width: 320px;
+	min-height: 220px;
+	border: 1px solid var(--vscode-editorGroup-border);
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--vscode-editor-background);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+	transition: box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.noripan-canvas-surface:hover {
+	border-color: color-mix(in srgb, var(--vscode-focusBorder) 55%, var(--vscode-editorGroup-border));
+	box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.noripan-canvas-surface:focus-within {
+	border-color: var(--vscode-focusBorder);
+	box-shadow: 0 0 0 1px var(--vscode-focusBorder), 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.noripan-canvas-surface-group {
+	position: absolute;
+	border: 1px solid color-mix(in srgb, var(--vscode-focusBorder) 50%, transparent);
+	border-radius: 12px;
+	background: color-mix(in srgb, var(--vscode-focusBorder) 8%, transparent);
+	pointer-events: none;
+}
+
+.noripan-canvas-surface-group-title {
+	position: absolute;
+	left: 10px;
+	top: 6px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--vscode-editorWidget-background) 90%, transparent);
+	color: var(--vscode-descriptionForeground);
+	font-size: 11px;
+}
+
+.noripan-canvas-surface.minimized {
+	min-height: 40px;
+}
+
+.noripan-canvas-surface.minimized .noripan-canvas-surface-body,
+.noripan-canvas-surface.minimized .noripan-canvas-surface-resize {
+	display: none;
+}
+
+.noripan-canvas-surface-header {
+	height: 40px;
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 10px 0 8px;
+	background: var(--vscode-tab-activeBackground);
+	border-bottom: 1px solid var(--vscode-editorGroup-border);
+	cursor: grab;
+	user-select: none;
+}
+
+.noripan-canvas-surface-header:active {
+	cursor: grabbing;
+}
+
+.noripan-canvas-surface-drag-handle {
+	flex: 0 0 auto;
+	width: 16px;
+	height: 24px;
+	border-radius: 4px;
+	background-image:
+		radial-gradient(circle, color-mix(in srgb, var(--vscode-icon-foreground) 72%, transparent) 1.2px, transparent 1.2px);
+	background-size: 6px 6px;
+	background-position: 1px 0;
+	opacity: 0.75;
+}
+
+.noripan-canvas-surface-title {
+	flex: 1;
+	min-width: 0;
+	font-size: 13px;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.noripan-canvas-surface-actions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-left: 8px;
+}
+
+.noripan-canvas-surface-action {
+	width: 24px;
+	height: 24px;
+	border: 0;
+	border-radius: 4px;
+	background: transparent;
+	color: var(--vscode-icon-foreground);
+	cursor: pointer;
+	line-height: 22px;
+	padding: 0;
+}
+
+.noripan-canvas-surface-action:hover {
+	background: var(--vscode-toolbar-hoverBackground);
+}
+
+.noripan-canvas-surface-body {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+	background: var(--vscode-editor-background);
+}
+
+.monaco-workbench .noripan-canvas-surface-body.terminal-editor > .terminal-overflow-guard.terminal-editor {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+}
+
+.monaco-workbench .noripan-canvas-surface-body.terminal-editor .terminal-wrapper,
+.monaco-workbench .noripan-canvas-surface-body.terminal-editor .terminal-outer-container,
+.monaco-workbench .noripan-canvas-surface-body.terminal-editor .terminal-wrapper > .terminal-xterm-host {
+	position: relative;
+	height: 100%;
+}
+
+.monaco-workbench .noripan-canvas-surface-body.terminal-editor .xterm {
+	position: relative !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: auto !important;
+	height: 100% !important;
+}
+
+.noripan-canvas-browser-frame {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: #fff;
+}
+
+.noripan-canvas-browser-notice {
+	position: absolute;
+	left: 12px;
+	right: 12px;
+	bottom: 12px;
+	padding: 8px 10px;
+	border-radius: 6px;
+	background: rgba(0, 0, 0, 0.64);
+	color: #ccc;
+	font-size: 12px;
+	line-height: 1.4;
+	pointer-events: none;
+}
+
+.noripan-canvas-surface-error {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	padding: 16px;
+	text-align: center;
+	color: var(--vscode-errorForeground);
+}
+
+.noripan-canvas-surface-resize {
+	position: absolute;
+	z-index: 2;
+}
+
+.noripan-canvas-surface-resize.direction-n,
+.noripan-canvas-surface-resize.direction-s {
+	left: 12px;
+	right: 12px;
+	height: 8px;
+}
+
+.noripan-canvas-surface-resize.direction-n {
+	top: -4px;
+	cursor: ns-resize;
+}
+
+.noripan-canvas-surface-resize.direction-s {
+	bottom: -4px;
+	cursor: ns-resize;
+}
+
+.noripan-canvas-surface-resize.direction-e,
+.noripan-canvas-surface-resize.direction-w {
+	top: 12px;
+	bottom: 12px;
+	width: 8px;
+}
+
+.noripan-canvas-surface-resize.direction-e {
+	right: -4px;
+	cursor: ew-resize;
+}
+
+.noripan-canvas-surface-resize.direction-w {
+	left: -4px;
+	cursor: ew-resize;
+}
+
+.noripan-canvas-surface-resize.direction-ne,
+.noripan-canvas-surface-resize.direction-nw,
+.noripan-canvas-surface-resize.direction-se,
+.noripan-canvas-surface-resize.direction-sw {
+	width: 18px;
+	height: 18px;
+}
+
+.noripan-canvas-surface-resize.direction-ne {
+	top: -4px;
+	right: -4px;
+	cursor: nesw-resize;
+}
+
+.noripan-canvas-surface-resize.direction-nw {
+	top: -4px;
+	left: -4px;
+	cursor: nwse-resize;
+}
+
+.noripan-canvas-surface-resize.direction-se {
+	right: -4px;
+	bottom: -4px;
+	cursor: nwse-resize;
+	background:
+		linear-gradient(135deg, transparent 0 53%, color-mix(in srgb, var(--vscode-editorWidget-border) 85%, transparent) 53% 61%, transparent 61% 100%),
+		linear-gradient(135deg, transparent 0 68%, color-mix(in srgb, var(--vscode-editorWidget-border) 85%, transparent) 68% 76%, transparent 76% 100%);
+}
+
+.noripan-canvas-surface-resize.direction-sw {
+	left: -4px;
+	bottom: -4px;
+	cursor: nesw-resize;
+}
+
+.noripan-canvas-minimap {
+	position: fixed;
+	right: calc(16px + 15px);
+	bottom: 16px;
+	width: 180px;
+	height: 120px;
+	z-index: 100000;
+	border: 1px solid var(--vscode-editorWidget-border);
+	border-radius: 6px;
+	background:
+		linear-gradient(to right, color-mix(in srgb, var(--vscode-editorWidget-border) 32%, transparent) 1px, transparent 1px),
+		linear-gradient(to bottom, color-mix(in srgb, var(--vscode-editorWidget-border) 32%, transparent) 1px, transparent 1px),
+		color-mix(in srgb, var(--vscode-editorWidget-background) 92%, transparent);
+	background-size: 18px 18px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+	cursor: crosshair;
+	overflow: hidden;
+	pointer-events: auto;
+}
+
+.noripan-canvas-minimap-handle {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	height: 18px;
+	z-index: 2;
+	padding: 2px 7px;
+	background: color-mix(in srgb, var(--vscode-titleBar-activeBackground) 74%, transparent);
+	color: var(--vscode-descriptionForeground);
+	cursor: move;
+	font-size: 10px;
+	line-height: 14px;
+	user-select: none;
+}
+
+.noripan-canvas-minimap-content,
+.noripan-canvas-minimap-viewport,
+.noripan-canvas-minimap-surface {
+	position: absolute;
+}
+
+.noripan-canvas-minimap-content {
+	inset: 0;
+}
+
+.noripan-canvas-minimap-surface {
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.82);
+	border-radius: 2px;
+	background: color-mix(in srgb, var(--vscode-focusBorder) 64%, transparent);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.55), 0 1px 4px rgba(0, 0, 0, 0.48);
+	overflow: hidden;
+}
+
+.noripan-canvas-minimap-surface.type-terminal {
+	background: color-mix(in srgb, var(--vscode-terminal-ansiGreen) 72%, transparent);
+}
+
+.noripan-canvas-minimap-surface.type-text-editor {
+	background: color-mix(in srgb, var(--vscode-terminal-ansiBlue) 72%, transparent);
+}
+
+.noripan-canvas-minimap-surface.type-browser {
+	background: color-mix(in srgb, var(--vscode-terminal-ansiMagenta) 72%, transparent);
+}
+
+.noripan-canvas-minimap-surface.minimized {
+	min-height: 4px;
+}
+
+.noripan-canvas-minimap-surface.grouped {
+	outline: 1px dashed var(--vscode-editorWarning-foreground);
+	outline-offset: 1px;
+}
+
+.noripan-canvas-minimap-surface-label {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: #fff;
+	font-size: 8px;
+	font-weight: 700;
+	line-height: 1;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+	pointer-events: none;
+}
+
+.noripan-canvas-minimap-viewport {
+	border: 2px solid var(--vscode-focusBorder);
+	background: color-mix(in srgb, var(--vscode-focusBorder) 12%, transparent);
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55), 0 0 8px color-mix(in srgb, var(--vscode-focusBorder) 50%, transparent);
+	pointer-events: none;
+}

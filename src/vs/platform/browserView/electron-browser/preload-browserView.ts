@@ -6,8 +6,22 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-restricted-syntax */
 
-// Only `import type` is allowed in preload scripts — Electron preloads cannot resolve module imports at runtime.
-import type { IBrowserViewTheme, IBrowserViewRect } from '../common/browserView.js';
+// Keep this file as a script, not a module. Electron preload scripts cannot
+// execute ESM output such as a trailing `export {}`. Define the tiny type
+// shapes locally instead of importing types.
+type IBrowserViewTheme = {
+	readonly focusBorder?: string;
+	readonly buttonBackground?: string;
+	readonly buttonForeground?: string;
+	readonly font?: string;
+};
+
+type IBrowserViewRect = {
+	readonly x: number;
+	readonly y: number;
+	readonly width: number;
+	readonly height: number;
+};
 
 /**
  * Preload script for pages loaded in Integrated Browser
@@ -118,6 +132,25 @@ function init() {
 			repeat: event.repeat
 		});
 	});
+
+	window.addEventListener('wheel', (event) => {
+		if (!(event instanceof WheelEvent) || !event.isTrusted) {
+			return;
+		}
+
+		if (!event.ctrlKey && !event.metaKey) {
+			return;
+		}
+
+		event.preventDefault();
+		event.stopPropagation();
+		ipcRenderer.send('vscode:browserView:wheel', {
+			deltaX: event.deltaX,
+			deltaY: event.deltaY,
+			ctrlKey: event.ctrlKey,
+			metaKey: event.metaKey
+		});
+	}, { passive: false });
 
 	const elementPicker = new ElementPicker(
 		el => ipcRenderer.send('vscode:browserView:elementPicked', track(el)),

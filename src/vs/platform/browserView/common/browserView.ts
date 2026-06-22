@@ -293,6 +293,13 @@ export interface IBrowserViewKeyDownEvent {
 	repeat: boolean;
 }
 
+export interface IBrowserViewWheelEvent {
+	deltaX: number;
+	deltaY: number;
+	ctrlKey: boolean;
+	metaKey: boolean;
+}
+
 export interface IBrowserViewTitleChangeEvent {
 	title: string;
 }
@@ -371,6 +378,7 @@ export interface IBrowserViewService {
 	onDynamicDidChangeVisibility(id: string): Event<IBrowserViewVisibilityEvent>;
 	onDynamicDidChangeDevToolsState(id: string): Event<IBrowserViewDevToolsStateEvent>;
 	onDynamicDidKeyCommand(id: string): Event<IBrowserViewKeyDownEvent>;
+	onDynamicDidWheel(id: string): Event<IBrowserViewWheelEvent>;
 	onDynamicDidChangeTitle(id: string): Event<IBrowserViewTitleChangeEvent>;
 	onDynamicDidChangeFavicon(id: string): Event<IBrowserViewFaviconChangeEvent>;
 	onDynamicDidFindInPage(id: string): Event<IBrowserViewFindInPageResult>;

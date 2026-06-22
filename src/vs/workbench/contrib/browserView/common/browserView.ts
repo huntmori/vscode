@@ -28,6 +28,7 @@ import {
 	IBrowserViewLoadError,
 	IBrowserViewFocusEvent,
 	IBrowserViewKeyDownEvent,
+	IBrowserViewWheelEvent,
 	IBrowserViewTitleChangeEvent,
 	IBrowserViewFaviconChangeEvent,
 	IBrowserViewDevToolsStateEvent,
@@ -343,6 +344,7 @@ export interface IBrowserViewModel extends IDisposable {
 	readonly onDidChangeFocus: Event<IBrowserViewFocusEvent>;
 	readonly onDidChangeDevToolsState: Event<IBrowserViewDevToolsStateEvent>;
 	readonly onDidKeyCommand: Event<IBrowserViewKeyDownEvent>;
+	readonly onDidWheel: Event<IBrowserViewWheelEvent>;
 	readonly onDidChangeTitle: Event<IBrowserViewTitleChangeEvent>;
 	readonly onDidChangeFavicon: Event<IBrowserViewFaviconChangeEvent>;
 	readonly onDidFindInPage: Event<IBrowserViewFindInPageResult>;
@@ -620,6 +622,10 @@ export class BrowserViewModel extends Disposable implements IBrowserViewModel {
 
 	get onDidKeyCommand(): Event<IBrowserViewKeyDownEvent> {
 		return this.browserViewService.onDynamicDidKeyCommand(this.id);
+	}
+
+	get onDidWheel(): Event<IBrowserViewWheelEvent> {
+		return this.browserViewService.onDynamicDidWheel(this.id);
 	}
 
 	get onDidChangeTitle(): Event<IBrowserViewTitleChangeEvent> {

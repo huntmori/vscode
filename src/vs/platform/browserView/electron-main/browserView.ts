@@ -7,7 +7,7 @@ import { screen, WebContentsView, webContents } from 'electron';
 import { Disposable } from '../../../base/common/lifecycle.js';
 import { Emitter, Event } from '../../../base/common/event.js';
 import { VSBuffer } from '../../../base/common/buffer.js';
-import { IBrowserViewBounds, IBrowserViewDevToolsStateEvent, IBrowserViewFocusEvent, IBrowserViewKeyDownEvent, IBrowserViewState, IBrowserViewNavigationEvent, IBrowserViewLoadingEvent, IBrowserViewLoadError, IBrowserViewTitleChangeEvent, IBrowserViewFaviconChangeEvent, IBrowserViewCaptureScreenshotOptions, IBrowserViewFindInPageOptions, IBrowserViewFindInPageResult, IBrowserViewVisibilityEvent, browserViewIsolatedWorldId, browserZoomFactors, browserZoomDefaultIndex, IBrowserViewOwner, IBrowserViewOpenOptions } from '../common/browserView.js';
+import { IBrowserViewBounds, IBrowserViewDevToolsStateEvent, IBrowserViewFocusEvent, IBrowserViewKeyDownEvent, IBrowserViewWheelEvent, IBrowserViewState, IBrowserViewNavigationEvent, IBrowserViewLoadingEvent, IBrowserViewLoadError, IBrowserViewTitleChangeEvent, IBrowserViewFaviconChangeEvent, IBrowserViewCaptureScreenshotOptions, IBrowserViewFindInPageOptions, IBrowserViewFindInPageResult, IBrowserViewVisibilityEvent, browserViewIsolatedWorldId, browserZoomFactors, browserZoomDefaultIndex, IBrowserViewOwner, IBrowserViewOpenOptions } from '../common/browserView.js';
 import { BrowserViewEmulator } from './browserViewEmulator.js';
 import { BrowserViewInspector } from './browserViewInspector.js';
 import { IWindowsMainService } from '../../windows/electron-main/windows.js';
@@ -86,6 +86,9 @@ export class BrowserView extends Disposable {
 
 	private readonly _onDidKeyCommand = this._register(new Emitter<IBrowserViewKeyDownEvent>());
 	readonly onDidKeyCommand: Event<IBrowserViewKeyDownEvent> = this._onDidKeyCommand.event;
+
+	private readonly _onDidWheel = this._register(new Emitter<IBrowserViewWheelEvent>());
+	readonly onDidWheel: Event<IBrowserViewWheelEvent> = this._onDidWheel.event;
 
 	private readonly _onDidChangeTitle = this._register(new Emitter<IBrowserViewTitleChangeEvent>());
 	readonly onDidChangeTitle: Event<IBrowserViewTitleChangeEvent> = this._onDidChangeTitle.event;
@@ -403,13 +406,19 @@ export class BrowserView extends Disposable {
 		const onCommandKeydown = (_event: unknown, keyEvent: IBrowserViewKeyDownEvent) => {
 			this._onDidKeyCommand.fire(keyEvent);
 		};
+		const onWheel = (_event: unknown, wheelEvent: IBrowserViewWheelEvent) => {
+			this._onDidWheel.fire(wheelEvent);
+		};
 
 		// Forward key down events that weren't handled by the page to the workbench for shortcut handling.
 		webContents.ipc.on('vscode:browserView:keydown', onCommandKeydown);
+		webContents.ipc.on('vscode:browserView:wheel', onWheel);
 		webContents.on('devtools-opened', () => {
 			// Avoid double-registration if the webContents is reused.
 			webContents.devToolsWebContents?.ipc.off('vscode:browserView:keydown', onCommandKeydown);
 			webContents.devToolsWebContents?.ipc.on('vscode:browserView:keydown', onCommandKeydown);
+			webContents.devToolsWebContents?.ipc.off('vscode:browserView:wheel', onWheel);
+			webContents.devToolsWebContents?.ipc.on('vscode:browserView:wheel', onWheel);
 		});
 
 		// If the page won't be able to handle events, forward key down events directly.

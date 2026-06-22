@@ -234,6 +234,7 @@ import './contrib/mcp/browser/mcp.view.contribution.js';
 import './contrib/chat/browser/chatSessions/chatSessions.contribution.js';
 import './contrib/chat/browser/contextContrib/chatContext.contribution.js';
 import './contrib/imageCarousel/browser/imageCarousel.contribution.js';
+import './contrib/noripanCanvas/browser/noripanCanvas.contribution.js';
 
 // Interactive
 import './contrib/interactive/browser/interactive.contribution.js';
